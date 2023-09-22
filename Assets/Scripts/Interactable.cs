@@ -25,6 +25,7 @@ public class Interactable : MonoBehaviour
     {
         glow.SetActive(_timer > 0);
         _timer -= Time.deltaTime;
+        _highlightTimer = Mathf.Clamp(_highlightTimer, 0, highlightTime);
         _highlightTimer -= Time.deltaTime;
         _renderer.materials[1].SetFloat(FresnelPower, _highlightTimer * 3);
     }
@@ -36,7 +37,7 @@ public class Interactable : MonoBehaviour
 
     public void Highlight()
     {
-        _highlightTimer = highlightTime;
+        _highlightTimer += Time.deltaTime * 1.5f;
     }
 }
 
