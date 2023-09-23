@@ -22,7 +22,7 @@ public class Interactable : MonoBehaviour
     }
 
     private void Update()
-    {
+    { 
         glow.SetActive(_timer > 0);
         _timer -= Time.deltaTime;
         _highlightTimer = Mathf.Clamp(_highlightTimer, 0, highlightTime);

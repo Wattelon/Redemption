@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float interactDistance;
     [SerializeField] private LayerMask interactableMask;
+    [SerializeField] private float telekinesisDistance;
+    [SerializeField] private LayerMask telekinesisMask;
+    [SerializeField] private float resizeDistance;
+    [SerializeField] private LayerMask resizeMask;
 
     private CharacterController _characterController;
     private PlayerInputActions _playerInputActions;
@@ -30,6 +34,10 @@ public class PlayerController : MonoBehaviour
     private Collider[] _interactableColliders;
     private Interactable _interactable;
     private List<Item> _items = new();
+    private Transform _currentTelekinesis;
+    private bool _visionUnlocked;
+    private bool _telekinesisUnlocked;
+    private bool _resizeUnlocked;
 
     private const float GRAVITY = -9.81f;
 
@@ -53,9 +61,10 @@ public class PlayerController : MonoBehaviour
         _playerInputActions.Player.Run.performed += OnRun;
         _playerInputActions.Player.Run.canceled += OnRun;
         _playerInputActions.Player.Fire.performed += OnFire;
+        _playerInputActions.Player.Fire.canceled += OnFire;
         _playerInputActions.Player.Focus.performed += OnFocus;
         _playerInputActions.Player.Focus.canceled += OnFocus;
-        _playerInputActions.Player.SwitchMode.performed += OnSwitchMode;
+        _playerInputActions.Player.Resize.performed += OnResize;
         _playerInputActions.Player.Interact.performed += OnInteract;
         _playerInputActions.Player.Crouch.performed += OnCrouch;
         _playerInputActions.Player.Crouch.canceled += OnCrouch;
@@ -67,9 +76,10 @@ public class PlayerController : MonoBehaviour
         _playerInputActions.Player.Run.performed -= OnRun;
         _playerInputActions.Player.Run.canceled -= OnRun;
         _playerInputActions.Player.Fire.performed -= OnFire;
+        _playerInputActions.Player.Fire.canceled -= OnFire;
         _playerInputActions.Player.Focus.performed -= OnFocus;
         _playerInputActions.Player.Focus.canceled -= OnFocus;
-        _playerInputActions.Player.SwitchMode.performed -= OnSwitchMode;
+        _playerInputActions.Player.Resize.performed -= OnResize;
         _playerInputActions.Player.Interact.performed -= OnInteract;
         _playerInputActions.Player.Crouch.performed -= OnCrouch;
         _playerInputActions.Player.Crouch.canceled -= OnCrouch;
@@ -79,6 +89,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Update()
@@ -111,9 +122,17 @@ public class PlayerController : MonoBehaviour
         }
         else _interactable = null;
 
+        FocusVision();
+
+    }
+
+    private void FocusVision()
+    {
+        var thisTransform = transform;
         if (IsFocused)
         {
-            var count = Physics.OverlapSphereNonAlloc(thisTransform.position, interactDistance * 5, _interactableColliders, interactableMask);
+            var count = Physics.OverlapSphereNonAlloc(thisTransform.position, interactDistance * 5, _interactableColliders,
+                telekinesisMask);
             for (int i = 0; i < count; i++)
             {
                 _interactableColliders[i].GetComponent<Interactable>().Highlight();
@@ -128,6 +147,22 @@ public class PlayerController : MonoBehaviour
         _cameraRotation = Mathf.Clamp(_cameraRotation, -viewRange, viewRange);
         transform.Rotate(Vector3.up * inputLookVector.x);
         cameraTransform.localRotation = Quaternion.Euler(_cameraRotation, 0, 0);
+    }
+
+    public void UnlockAbility(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                _visionUnlocked = true;
+                break;
+            case 1:
+                _telekinesisUnlocked = true;
+                break;
+            case 2:
+                _resizeUnlocked = true;
+                break;
+        }
     }
 
     private void OnJump(InputAction.CallbackContext context)
@@ -145,17 +180,44 @@ public class PlayerController : MonoBehaviour
 
     private void OnFire(InputAction.CallbackContext context)
     {
+        if (!_telekinesisUnlocked) return;
+        if (context.performed)
+        {
+            if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out var hit, telekinesisDistance, telekinesisMask))
+            {
+                _currentTelekinesis = hit.transform;
+                _currentTelekinesis.SetParent(cameraTransform);
+                _currentTelekinesis.GetComponent<Rigidbody>().isKinematic = true;
+            }
+        }
+        else
+        {
+            if (_currentTelekinesis is not null)
+            {
+                _currentTelekinesis.SetParent(null);
+                var telekinesisRigidbody = _currentTelekinesis.GetComponent<Rigidbody>();
+                telekinesisRigidbody.isKinematic = false;
+            }
+        }
     }
 
     private void OnFocus(InputAction.CallbackContext context)
     {
+        if (!_visionUnlocked) return;
         if (context.performed) characterCamera.fieldOfView *= 0.5f;
         else characterCamera.fieldOfView *= 2f;
         IsFocused = context.performed;
     }
 
-    private void OnSwitchMode(InputAction.CallbackContext context)
+    private void OnResize(InputAction.CallbackContext context)
     {
+        if (!_resizeUnlocked) return;
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out var hit, resizeDistance, resizeMask))
+        {
+            var value = _playerInputActions.Player.Resize.ReadValue<float>();
+            var scale = hit.transform.localScale.x;
+            hit.transform.localScale = Vector3.one * Mathf.Clamp(scale + value, 0.5f, 2f);
+        }
     }
     
     private void OnInteract(InputAction.CallbackContext context)
@@ -164,7 +226,6 @@ public class PlayerController : MonoBehaviour
         {
             _items.Add(_interactable.ItemType);
             Destroy(_interactable.gameObject);
-            Debug.Log(_items[^1]);
         }
     }
     
