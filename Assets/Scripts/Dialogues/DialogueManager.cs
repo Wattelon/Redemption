@@ -7,8 +7,11 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
-    public TextMeshPro nameText;
-    public TextMeshPro dialogueText;
+    public TMP_Text nameText;
+    public TMP_Text dialogueText;
+
+
+    public Animator animator;
 
     private Queue<string> sentences;
 
@@ -19,6 +22,8 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(Dialogue dialogue)
     {
+        animator.SetBool("IsOpen", true);
+
         nameText.text = dialogue.name;
 
         sentences.Clear();
@@ -42,11 +47,21 @@ public class DialogueManager : MonoBehaviour
         }
 
         string sentence = sentences.Dequeue();
-        dialogueText.text = sentence;
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
     }
 
+    IEnumerator TypeSentence(string sentence)
+    {
+        dialogueText.text = "";
+        foreach (char letter in sentence.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return null;
+        }
+    }
     private void EndDialogue()
     {
-        Debug.Log("End of conversation");
-    }
+        animator.SetBool("IsOpen", false);
+;   }
 }
