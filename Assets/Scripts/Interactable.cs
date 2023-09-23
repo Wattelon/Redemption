@@ -43,7 +43,7 @@ public class Interactable : MonoBehaviour
 
 public enum Item
 {
-    Key,
-    Candle,
-    Photo
+    Flower,
+    Book,
+    Key
 }
