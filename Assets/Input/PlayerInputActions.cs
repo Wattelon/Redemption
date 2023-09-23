@@ -82,15 +82,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SwitchMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""39b66f1e-2d8c-401f-9564-e9f7677eedd3"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""d5566226-fd95-4e7d-9536-75a576d024c0"",
@@ -107,6 +98,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Resize"",
+                    ""type"": ""Value"",
+                    ""id"": ""058d1d3e-ac5b-4d4e-aec2-902f310d1e2a"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -365,17 +365,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""63af5743-acb9-47f4-b8fd-720313e36aa3"",
-                    ""path"": ""<Keyboard>/v"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""SwitchMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""cad59984-f1ce-462d-a86b-54ff316a4215"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
@@ -393,6 +382,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38eab4cd-3cd6-428f-93b5-9b4fc85af5eb"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Normalize(min=-1200,max=1200)"",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Resize"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -986,9 +986,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
         m_Player_Focus = m_Player.FindAction("Focus", throwIfNotFound: true);
-        m_Player_SwitchMode = m_Player.FindAction("SwitchMode", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
+        m_Player_Resize = m_Player.FindAction("Resize", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1068,9 +1068,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Run;
     private readonly InputAction m_Player_Focus;
-    private readonly InputAction m_Player_SwitchMode;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Crouch;
+    private readonly InputAction m_Player_Resize;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -1081,9 +1081,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Run => m_Wrapper.m_Player_Run;
         public InputAction @Focus => m_Wrapper.m_Player_Focus;
-        public InputAction @SwitchMode => m_Wrapper.m_Player_SwitchMode;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
+        public InputAction @Resize => m_Wrapper.m_Player_Resize;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1111,15 +1111,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Focus.started += instance.OnFocus;
             @Focus.performed += instance.OnFocus;
             @Focus.canceled += instance.OnFocus;
-            @SwitchMode.started += instance.OnSwitchMode;
-            @SwitchMode.performed += instance.OnSwitchMode;
-            @SwitchMode.canceled += instance.OnSwitchMode;
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
+            @Resize.started += instance.OnResize;
+            @Resize.performed += instance.OnResize;
+            @Resize.canceled += instance.OnResize;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1142,15 +1142,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Focus.started -= instance.OnFocus;
             @Focus.performed -= instance.OnFocus;
             @Focus.canceled -= instance.OnFocus;
-            @SwitchMode.started -= instance.OnSwitchMode;
-            @SwitchMode.performed -= instance.OnSwitchMode;
-            @SwitchMode.canceled -= instance.OnSwitchMode;
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
+            @Resize.started -= instance.OnResize;
+            @Resize.performed -= instance.OnResize;
+            @Resize.canceled -= instance.OnResize;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1339,9 +1339,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnFocus(InputAction.CallbackContext context);
-        void OnSwitchMode(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
+        void OnResize(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

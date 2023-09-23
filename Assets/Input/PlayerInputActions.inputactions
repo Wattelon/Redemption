@@ -60,15 +60,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SwitchMode",
-                    "type": "Button",
-                    "id": "39b66f1e-2d8c-401f-9564-e9f7677eedd3",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "d5566226-fd95-4e7d-9536-75a576d024c0",
@@ -85,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Resize",
+                    "type": "Value",
+                    "id": "058d1d3e-ac5b-4d4e-aec2-902f310d1e2a",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -343,17 +343,6 @@
                 },
                 {
                     "name": "",
-                    "id": "63af5743-acb9-47f4-b8fd-720313e36aa3",
-                    "path": "<Keyboard>/v",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "SwitchMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "cad59984-f1ce-462d-a86b-54ff316a4215",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -371,6 +360,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "38eab4cd-3cd6-428f-93b5-9b4fc85af5eb",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Normalize(min=-1200,max=1200)",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Resize",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
