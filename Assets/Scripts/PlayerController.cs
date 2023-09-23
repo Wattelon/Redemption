@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask telekinesisMask;
     [SerializeField] private float resizeDistance;
     [SerializeField] private LayerMask resizeMask;
+    [SerializeField] private float telekinesisForce;
 
     private CharacterController _characterController;
     private PlayerInputActions _playerInputActions;
@@ -34,10 +35,11 @@ public class PlayerController : MonoBehaviour
     private Collider[] _interactableColliders;
     private Interactable _interactable;
     private List<Item> _items = new();
-    private Transform _currentTelekinesis;
-    private bool _visionUnlocked;
-    private bool _telekinesisUnlocked;
+    private Rigidbody _currentTelekinesis;
+    private bool _visionUnlocked = true;
+    private bool _telekinesisUnlocked = true;
     private bool _resizeUnlocked;
+    private float _currentTelekinesisDistance;
 
     private const float GRAVITY = -9.81f;
 
@@ -107,7 +109,7 @@ public class PlayerController : MonoBehaviour
 
         var inputMoveVector = _playerInputActions.Player.Move.ReadValue<Vector2>();
         IsMoving = inputMoveVector.sqrMagnitude > 0;
-        if (IsGrounded) _moveVector = thisTransform.right * inputMoveVector.x + thisTransform.forward * inputMoveVector.y;
+        _moveVector = thisTransform.right * inputMoveVector.x + thisTransform.forward * inputMoveVector.y;
         
         _characterController.Move((_moveVector.normalized * (_speedModifier * movementSpeed) + _verticalVelocity) * Time.deltaTime);
         
@@ -124,22 +126,20 @@ public class PlayerController : MonoBehaviour
 
         FocusVision();
 
-    }
-
-    private void FocusVision()
-    {
-        var thisTransform = transform;
-        if (IsFocused)
+        if (_currentTelekinesis is not null)
         {
-            var count = Physics.OverlapSphereNonAlloc(thisTransform.position, interactDistance * 5, _interactableColliders,
-                telekinesisMask);
-            for (int i = 0; i < count; i++)
+            var localPoint = cameraTransform.forward * _currentTelekinesisDistance;
+            var point = localPoint + cameraTransform.position;
+            var forceVector = point - _currentTelekinesis.transform.position;
+            if (forceVector.sqrMagnitude > 100)
             {
-                _interactableColliders[i].GetComponent<Interactable>().Highlight();
+                _currentTelekinesis = null;
+                return;
             }
+            _currentTelekinesis.AddForce(forceVector * (telekinesisForce * Time.deltaTime));
         }
     }
-
+    
     private void InputCameraView()
     {
         var inputLookVector = _playerInputActions.Player.Look.ReadValue<Vector2>() * (cameraSensitivity * Time.deltaTime);
@@ -147,6 +147,20 @@ public class PlayerController : MonoBehaviour
         _cameraRotation = Mathf.Clamp(_cameraRotation, -viewRange, viewRange);
         transform.Rotate(Vector3.up * inputLookVector.x);
         cameraTransform.localRotation = Quaternion.Euler(_cameraRotation, 0, 0);
+    }
+
+    private void FocusVision()
+    {
+        var thisTransform = transform;
+        if (IsFocused)
+        {
+            var count = Physics.OverlapSphereNonAlloc(thisTransform.position, interactDistance * 10, _interactableColliders,
+                telekinesisMask);
+            for (int i = 0; i < count; i++)
+            {
+                _interactableColliders[i].GetComponent<Interactable>().Highlight();
+            }
+        }
     }
 
     public void UnlockAbility(int index)
@@ -175,7 +189,7 @@ public class PlayerController : MonoBehaviour
     private void OnRun(InputAction.CallbackContext context)
     {
         IsRunning = context.performed;
-        characterCamera.fieldOfView *= context.performed ? 1.5f : 1/1.5f;
+        characterCamera.fieldOfView *= context.performed ? 1.2f : 1/1.2f;
     }
 
     private void OnFire(InputAction.CallbackContext context)
@@ -183,22 +197,15 @@ public class PlayerController : MonoBehaviour
         if (!_telekinesisUnlocked) return;
         if (context.performed)
         {
-            if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out var hit, telekinesisDistance, telekinesisMask))
+            if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out var hit, telekinesisDistance,
+                    telekinesisMask))
             {
-                _currentTelekinesis = hit.transform;
-                _currentTelekinesis.SetParent(cameraTransform);
-                _currentTelekinesis.GetComponent<Rigidbody>().isKinematic = true;
+                _currentTelekinesis = hit.transform.GetComponent<Rigidbody>();
+                _currentTelekinesis.isKinematic = false;
+                _currentTelekinesisDistance = hit.distance;
             }
         }
-        else
-        {
-            if (_currentTelekinesis is not null)
-            {
-                _currentTelekinesis.SetParent(null);
-                var telekinesisRigidbody = _currentTelekinesis.GetComponent<Rigidbody>();
-                telekinesisRigidbody.isKinematic = false;
-            }
-        }
+        else _currentTelekinesis = null;
     }
 
     private void OnFocus(InputAction.CallbackContext context)
@@ -211,6 +218,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnResize(InputAction.CallbackContext context)
     {
+        if (_currentTelekinesis is not null)
+        {
+            var value = _playerInputActions.Player.Resize.ReadValue<float>();
+            _currentTelekinesisDistance += value * 2;
+            _currentTelekinesisDistance = Mathf.Clamp(_currentTelekinesisDistance, 3, 10);
+            return;
+        }
         if (!_resizeUnlocked) return;
         if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out var hit, resizeDistance, resizeMask))
         {
@@ -235,7 +249,7 @@ public class PlayerController : MonoBehaviour
         cameraTransform.localPosition += Vector3.up * (context.performed ? -1 : 1);
         groundCheck.localPosition += Vector3.up * (context.performed ? 0.5f : -0.5f);
         movementSpeed *= context.performed ? 0.5f : 2f;
-        characterCamera.fieldOfView *= context.performed ? 1/1.5f : 1.5f;
+        characterCamera.fieldOfView *= context.performed ? 1/1.2f : 1.2f;
     }
 
     private IEnumerator Jump()

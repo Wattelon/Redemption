@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4568110425411798883}
   - component: {fileID: 7812880824556081434}
   - component: {fileID: 3431403480790826331}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MainCharacter
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -56,9 +56,9 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.3
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.5
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
@@ -74,16 +74,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545bb72857231dc4ca0bc3077a6260ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSensitivity: 10
+  cameraSensitivity: 25
+  viewRange: 75
+  movementSpeed: 4
   jumpHeight: 1
-  turnSmoothTime: 0
-  airborneTurnTimeModificator: 0
+  characterCamera: {fileID: 2735426269257810781}
   cameraTransform: {fileID: 2629105191472310714}
   groundCheck: {fileID: 3574572757238004425}
-  groundDistance: 0
+  groundDistance: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 576
+  interactDistance: 3
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 256
+  telekinesisDistance: 10
+  telekinesisMask:
+    serializedVersion: 2
+    m_Bits: 768
+  resizeDistance: 5
+  resizeMask:
+    serializedVersion: 2
+    m_Bits: 768
 --- !u!1 &7511664728039757236
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +108,6 @@ GameObject:
   - component: {fileID: 4453152437470525049}
   - component: {fileID: 5828493668964720129}
   - component: {fileID: 2405502069588102792}
-  - component: {fileID: 7755533929165146919}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -112,7 +124,7 @@ Transform:
   m_GameObject: {fileID: 7511664728039757236}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 1, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4568110425411798883}
@@ -168,29 +180,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &7755533929165146919
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7511664728039757236}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7973529374715210104
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,11 +244,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

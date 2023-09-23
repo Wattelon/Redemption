@@ -27,7 +27,7 @@ public class Pile : MonoBehaviour
             }
             else
             {
-                GetComponent<Collider>().isTrigger = true;
+                Destroy(GetComponent<Collider>());
             }
         }
     }
