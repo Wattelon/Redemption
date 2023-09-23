@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float cameraSensitivity;
     [SerializeField] private float viewRange;
-    [SerializeField] private float movementSpeed;
+    [SerializeField] public float movementSpeed;
     [SerializeField] private float jumpHeight;
     [SerializeField] private Camera characterCamera;
     [SerializeField] private Transform cameraTransform;
@@ -25,6 +24,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float resizeDistance;
     [SerializeField] private LayerMask resizeMask;
     [SerializeField] private float telekinesisForce;
+    [SerializeField] private NPCDialogue bro;
+    [SerializeField] private NPCDialogue mom;
+    [SerializeField] private NPCDialogue sis;
+    [SerializeField] private NPCDialogue dad;
 
     private CharacterController _characterController;
     private PlayerInputActions _playerInputActions;
@@ -36,9 +39,9 @@ public class PlayerController : MonoBehaviour
     private Interactable _interactable;
     private List<Item> _items = new();
     private Rigidbody _currentTelekinesis;
-    private bool _visionUnlocked = true;
-    private bool _telekinesisUnlocked = true;
-    private bool _resizeUnlocked = true;
+    private bool _visionUnlocked;
+    private bool _telekinesisUnlocked;
+    private bool _resizeUnlocked;
     private float _currentTelekinesisDistance;
 
     private const float GRAVITY = -9.81f;
@@ -99,7 +102,7 @@ public class PlayerController : MonoBehaviour
         IsGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (!_characterController.isGrounded) _verticalVelocity.y += GRAVITY * Time.deltaTime;
         else _verticalVelocity = Vector3.zero;
-
+        
         if (IsGrounded) _speedModifier = IsRunning ? 2 : 1;
         IsFalling = !IsGrounded && _verticalVelocity.y < 0;
         
@@ -168,13 +171,13 @@ public class PlayerController : MonoBehaviour
     {
         switch (index)
         {
-            case 0:
+            case 1:
                 _visionUnlocked = true;
                 break;
-            case 1:
+            case 2:
                 _telekinesisUnlocked = true;
                 break;
-            case 2:
+            case 3:
                 _resizeUnlocked = true;
                 break;
         }
@@ -240,6 +243,14 @@ public class PlayerController : MonoBehaviour
         if (_interactable is not null)
         {
             _items.Add(_interactable.ItemType);
+            if (_items.Count(item => item == Item.Flower) == 3)
+            {
+                bro.triggerIndex = 2;
+                bro.transform.root.position = transform.position + transform.forward * 3 + transform.right * 3;
+                bro.transform.LookAt(transform);
+                mom.triggerIndex = 3;
+            }
+            if (_interactable.ItemType == Item.Book) sis.triggerIndex = 7;
             Destroy(_interactable.gameObject);
         }
     }
@@ -259,5 +270,21 @@ public class PlayerController : MonoBehaviour
         _verticalVelocity.y = Mathf.Sqrt(jumpHeight * -2 * GRAVITY);
         _characterController.Move(_verticalVelocity * Time.deltaTime);
         IsJumping = false;
+    }
+
+    public void ChangeInputScheme()
+    {
+        if (_playerInputActions.Player.enabled)
+        {
+            _playerInputActions.Player.Disable();
+            _playerInputActions.UI.Enable();
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            _playerInputActions.Player.Enable();
+            _playerInputActions.UI.Disable();
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 }

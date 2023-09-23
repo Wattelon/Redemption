@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     public Animator animator;
 
     private Queue<string> sentences;
+    private static readonly int IsOpen = Animator.StringToHash("IsOpen");
 
     private void Start()
     {
@@ -22,7 +23,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(Dialogue dialogue)
     {
-        animator.SetBool("IsOpen", true);
+        animator.SetBool(IsOpen, true);
 
         nameText.text = dialogue.name;
 
@@ -62,6 +63,7 @@ public class DialogueManager : MonoBehaviour
     }
     private void EndDialogue()
     {
-        animator.SetBool("IsOpen", false);
-;   }
+        animator.SetBool(IsOpen, false);
+        FindObjectOfType<PlayerController>().ChangeInputScheme();
+    }
 }

@@ -7,11 +7,10 @@ public class Pillar : MonoBehaviour
 
     private bool _isWaitingResize;
 
-
     private void OnTriggerEnter(Collider other)
     {
         var thisTransform = transform;
-        if (other.transform == thisTransform.root)
+        if (other.transform == thisTransform.parent)
         {
             GetComponent<Rigidbody>().isKinematic = true;
             thisTransform.localPosition = Vector3.zero;
@@ -24,7 +23,7 @@ public class Pillar : MonoBehaviour
     {
         if (_isWaitingResize && transform.localScale == targetScale)
         {
-            Basement.PlacePillar();
+            FindObjectOfType<Basement>().PlacePillar();
             gameObject.layer = 0;
             Destroy(this);
         }

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Basement : MonoBehaviour
 {
+    [SerializeField] private NPCDialogue dad;
     private static int _pillarsInPlace;
+    private int i = 0;
 
-    public static void PlacePillar()
+    public void PlacePillar()
     {
         _pillarsInPlace++;
         if (_pillarsInPlace == 5)
@@ -15,8 +17,9 @@ public class Basement : MonoBehaviour
         }
     }
 
-    private static void SaveBasement()
+    private void SaveBasement()
     {
-        Debug.Log("BasementSaved!");
+        dad.triggerIndex = 10;
+        dad.GetComponent<SphereCollider>().enabled = true;
     }
 }
