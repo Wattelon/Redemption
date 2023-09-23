@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _currentTelekinesis;
     private bool _visionUnlocked = true;
     private bool _telekinesisUnlocked = true;
-    private bool _resizeUnlocked;
+    private bool _resizeUnlocked = true;
     private float _currentTelekinesisDistance;
 
     private const float GRAVITY = -9.81f;
@@ -133,6 +133,7 @@ public class PlayerController : MonoBehaviour
             var forceVector = point - _currentTelekinesis.transform.position;
             if (forceVector.sqrMagnitude > 100)
             {
+
                 _currentTelekinesis = null;
                 return;
             }

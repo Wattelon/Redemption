@@ -34,7 +34,7 @@ Transform:
   - {fileID: 4453152437470525049}
   - {fileID: 3574572757238004425}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &7812880824556081434
 CharacterController:
@@ -97,6 +97,7 @@ MonoBehaviour:
   resizeMask:
     serializedVersion: 2
     m_Bits: 768
+  telekinesisForce: 10000
 --- !u!1 &7511664728039757236
 GameObject:
   m_ObjectHideFlags: 0

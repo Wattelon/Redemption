@@ -4407,54 +4407,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2629105191472310714, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735426269257810781, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: field of view
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735426269257810781, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: far clip plane
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735426269257810781, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: near clip plane
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735426269257810781, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: orthographic size
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3431403480790826331, guid: bc7395b37f5c170458376de208afcd27, type: 3}
-      propertyPath: telekinesisForce
-      value: 10000
-      objectReference: {fileID: 0}
     - target: {fileID: 4568110425411798883, guid: bc7395b37f5c170458376de208afcd27, type: 3}
       propertyPath: m_RootOrder
       value: 6
