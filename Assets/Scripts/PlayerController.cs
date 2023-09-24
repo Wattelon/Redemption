@@ -39,12 +39,14 @@ public class PlayerController : MonoBehaviour
     private Interactable _interactable;
     private List<Item> _items = new();
     private Rigidbody _currentTelekinesis;
-    private bool _visionUnlocked;
-    private bool _telekinesisUnlocked;
-    private bool _resizeUnlocked;
+    [SerializeField] private bool _visionUnlocked;
+    [SerializeField] private bool _telekinesisUnlocked;
+    [SerializeField] private bool _resizeUnlocked;
     private float _currentTelekinesisDistance;
 
     private const float GRAVITY = -9.81f;
+
+    public bool IsTalking;
 
     public bool IsMoving { get; private protected set; }
     public bool IsRunning { get; private protected set; }
@@ -136,7 +138,6 @@ public class PlayerController : MonoBehaviour
             var forceVector = point - _currentTelekinesis.transform.position;
             if (forceVector.sqrMagnitude > 100)
             {
-
                 _currentTelekinesis = null;
                 return;
             }
@@ -146,6 +147,7 @@ public class PlayerController : MonoBehaviour
     
     private void InputCameraView()
     {
+        if (IsTalking) return;
         var inputLookVector = _playerInputActions.Player.Look.ReadValue<Vector2>() * (cameraSensitivity * Time.deltaTime);
         _cameraRotation -= inputLookVector.y;
         _cameraRotation = Mathf.Clamp(_cameraRotation, -viewRange, viewRange);
@@ -272,19 +274,18 @@ public class PlayerController : MonoBehaviour
         IsJumping = false;
     }
 
-    public void ChangeInputScheme()
+    public void PlayerInputScheme()
     {
-        if (_playerInputActions.Player.enabled)
-        {
-            _playerInputActions.Player.Disable();
-            _playerInputActions.UI.Enable();
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            _playerInputActions.Player.Enable();
-            _playerInputActions.UI.Disable();
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        _playerInputActions.Player.Enable();
+        _playerInputActions.UI.Disable();
+        Cursor.lockState = CursorLockMode.Locked;
+        transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, 0));
+    }
+    
+    public void UIInputScheme()
+    {
+        _playerInputActions.Player.Disable();
+        _playerInputActions.UI.Enable();
+        Cursor.lockState = CursorLockMode.None;
     }
 }

@@ -15,6 +15,7 @@ public class MomSight : MonoBehaviour
             bro.triggerIndex = 5;
             bro.transform.root.position = otherTransform.position + otherTransform.forward * 3 + otherTransform.right * 3;
             bro.transform.LookAt(other.transform);
+            Destroy(gameObject);
         }
     }
 }

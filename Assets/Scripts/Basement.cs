@@ -6,12 +6,11 @@ public class Basement : MonoBehaviour
 {
     [SerializeField] private NPCDialogue dad;
     private static int _pillarsInPlace;
-    private int i = 0;
 
     public void PlacePillar()
     {
         _pillarsInPlace++;
-        if (_pillarsInPlace == 5)
+        if (_pillarsInPlace == 4)
         {
             SaveBasement();
         }
